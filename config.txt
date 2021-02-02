@@ -1,0 +1,5 @@
+;!@Install@!UTF-8!
+Title="Rigs of Rods"
+BeginPrompt="Do you want to install Rigs of Rods?"
+ExecuteFile="setup.exe"
+;!@InstallEnd@!

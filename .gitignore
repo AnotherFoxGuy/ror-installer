@@ -1,1 +1,25 @@
-Build/*.exe
+Build/
+Build_ContentPack/
+Release/
+ContentPack/
+
+RoR_2021.02_Setup_with_ContentPack.exe
+setup-content.7z
+
+### CMake ###
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+CMakeUserPresets.json
+
+### CMake Patch ###
+# External projects
+*-prefix/
