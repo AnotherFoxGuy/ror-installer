@@ -5,7 +5,6 @@
 #define InstallerVersion "2021.02"
 #define InstallerPublisher "Rigs of Rods"
 #define InstallerURL "https://www.rigsofrods.org"
-#define InstallerExeName "RoR.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -19,8 +18,8 @@ AppPublisher={#InstallerPublisher}
 AppPublisherURL={#InstallerURL}
 AppSupportURL={#InstallerURL}
 AppUpdatesURL={#InstallerURL}
-DefaultDirName={pf}\Rigs of Rods
-DefaultGroupName=Rigs of Rods
+DefaultDirName={autopf}\{#InstallerName}
+DefaultGroupName={#InstallerName}
 DisableProgramGroupPage=yes
 LicenseFile=TextFiles\GNU General Public License v3.0.txt
 InfoAfterFile=TextFiles\AfterInstall.txt
@@ -69,11 +68,14 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 
-[Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+[Components]
+Name: "install_contentpack"; Description: "Install the ContentPack"; Types: full
+Name: "install_updater"; Description: "Install the updater"; Types: full
 
-;[Dirs]
-;Name: "{userdocs}\Rigs of Rods 0.4\mods"
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+Name: "install_directx"; Description: "Install DirectX9 runtime"
+Name: "install_vsredist"; Description: "Install VS2019 Redist"
 
 [Files]
 ; Folders
@@ -82,28 +84,26 @@ Source: "Release\resources\*"; DestDir: "{app}\resources"; Flags: ignoreversion 
 Source: "ContentPack\*"; DestDir: "{app}\content"; Flags: ignoreversion createallsubdirs recursesubdirs; Components: install_contentpack
 ; Main files
 Source: "Release\x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Updater
+Source: "Release\updater\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: install_updater
 ; DirectX
-Source: "Dependencies\DirectX\*"; DestDir: "{tmp}"; Flags: nocompression createallsubdirs recursesubdirs deleteafterinstall overwritereadonly ignoreversion uninsremovereadonly; Components: install_directx
+Source: "Dependencies\DirectX\*"; DestDir: "{tmp}"; Flags: createallsubdirs recursesubdirs deleteafterinstall overwritereadonly ignoreversion uninsremovereadonly; Tasks: install_directx
 ; VS redist
-Source: "Dependencies\VSRedist\*"; DestDir: "{tmp}"; Flags: nocompression createallsubdirs recursesubdirs deleteafterinstall overwritereadonly ignoreversion uninsremovereadonly; Components: install_vsredist
+Source: "Dependencies\VSRedist\*"; DestDir: "{tmp}"; Flags: createallsubdirs recursesubdirs deleteafterinstall overwritereadonly ignoreversion uninsremovereadonly; Tasks: install_vsredist
 
 [Icons]
 ; Start Menu
 Name: "{group}\Rigs of Rods"; Filename: "{app}\RoR.exe"
+Name: "{group}\Rigs of Rods Updater"; Filename: "{app}\ror-updater.exe"; Components: install_updater
 Name: "{group}\{cm:UninstallProgram,{#InstallerName}}"; Filename: "{uninstallexe}"
 ; Desktop
 Name: "{commondesktop}\Rigs of Rods"; Filename: "{app}\RoR.exe"; Tasks: desktopicon
 
 [Run]
 ; DirectX
-Filename: "{tmp}\DXSETUP.exe"; Parameters: "/silent"; WorkingDir: "{tmp}"; Flags: waituntilterminated skipifdoesntexist runascurrentuser; StatusMsg: "Installing DirectX..."; Components: install_directx
+Filename: "{tmp}\DXSETUP.exe"; Parameters: "/silent"; WorkingDir: "{tmp}"; Flags: waituntilterminated skipifdoesntexist runascurrentuser; StatusMsg: "Installing DirectX..."; Tasks: install_directx
 ; VS redist
-Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /passive /norestart"; WorkingDir: "{tmp}"; Flags: waituntilterminated skipifdoesntexist runascurrentuser; StatusMsg: "Installing Visual Studio Redistributable (x64)..."; Components: install_vsredist; Check: Is64BitInstallMode
-Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /passive /norestart"; WorkingDir: "{tmp}"; Flags: waituntilterminated skipifdoesntexist runascurrentuser; StatusMsg: "Installing Visual Studio Redistributable (x86)..."; Components: install_vsredist; Check: not Is64BitInstallMode
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /passive /norestart"; WorkingDir: "{tmp}"; Flags: waituntilterminated skipifdoesntexist runascurrentuser; StatusMsg: "Installing Visual Studio Redistributable (x64)..."; Tasks: install_vsredist
+Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /passive /norestart"; WorkingDir: "{tmp}"; Flags: waituntilterminated skipifdoesntexist runascurrentuser; StatusMsg: "Installing Visual Studio Redistributable (x86)..."; Tasks: install_vsredist
 ; "Launch Rigs of Rods" button after install
-Filename: "{app}\{#InstallerExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(InstallerName, '&', '&&')}}"
-
-[Components]
-Name: "install_directx"; Description: "Install DirectX9 runtime"; Types: full
-Name: "install_vsredist"; Description: "Install VS2019 Redist"; Types: full
-Name: "install_contentpack"; Description: "Install the ContentPack"; Types: full
+Filename: "{app}\RoR.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(InstallerName, '&', '&&')}}"
